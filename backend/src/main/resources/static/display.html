@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>動物顯示</title>
+  <style>
+    canvas {
+      border: 1px solid #ccc;
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>動物位置展示</h1>
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 以不同顏色代表不同種類動物
+    const colorMap = {
+      cat: 'orange',
+      dog: 'brown',
+      bird: 'blue',
+      default: 'green'
+    };
+
+    function fetchAnimalsAndDraw() {
+      fetch('/api/animals')
+        .then(res => res.json())
+        .then(animals => {
+          // 清空畫布
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          animals.forEach(animal => {
+            const x = animal.x;
+            const y = animal.y;
+            const color = colorMap[animal.type] || colorMap.default;
+
+            // 畫圓圈代表動物
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // 寫名字在旁邊
+            ctx.fillStyle = 'black';
+            ctx.font = '12px Arial';
+            ctx.fillText(animal.name, x + 12, y + 4);
+          });
+        })
+        .catch(err => console.error('抓取動物資料錯誤:', err));
+    }
+
+    // 每秒刷新動物位置
+    setInterval(fetchAnimalsAndDraw, 1000);
+
+    // 初始載入一次
+    fetchAnimalsAndDraw();
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+  <title>放置動物</title>
+</head>
+<body>
+  <h1>新增動物</h1>
+  <form id="animalForm">
+    <input type="text" placeholder="類型 (type)" name="type" required><br>
+    <input type="text" placeholder="名字 (name)" name="name" required><br>
+    <input type="number" placeholder="X 座標" name="x" required><br>
+    <input type="number" placeholder="Y 座標" name="y" required><br>
+    <input type="text" placeholder="狀態 (state)" name="state" required><br>
+    <button type="submit">放一隻動物！</button>
+  </form>
+
+  <script>
+    document.getElementById("animalForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      fetch("http://localhost:8080/api/animals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(animal => alert("成功放置動物：" + animal.name));
+    });
+  </script>
+</body>
+</html>
